@@ -1,5 +1,7 @@
 # The Game of The Holy Nubbe
-Midsummer drinking game 2025. HTML game, so drag n' drop this game into a new tab of a desired browser and your'e all set to have some midsummer fun!
+Midsummer drinking game 2025. The game where randomized snaps events and team games meet to declare a midsummer champion. 
+
+This is a HTML game, so simply drag n' drop this game into a tab of a desired browser and your'e set to have some midsummer fun!
 
 Nubbe = Snaps = "A kind of a Swedish shot"
 
