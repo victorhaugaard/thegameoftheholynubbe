@@ -1,0 +1,2400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Game of The Holy Nubbe</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 50%, #FFE4B5 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .flower {
+            position: absolute;
+            font-size: 2rem;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .flower:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .flower:nth-child(2) { top: 20%; right: 15%; animation-delay: 1s; }
+        .flower:nth-child(3) { top: 60%; left: 5%; animation-delay: 2s; }
+        .flower:nth-child(4) { bottom: 20%; right: 10%; animation-delay: 3s; }
+        .flower:nth-child(5) { top: 80%; left: 80%; animation-delay: 4s; }
+
+        .screen {
+            display: none;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .welcome-container {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 4rem;
+            font-weight: 700;
+            color: #2C5F41;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #4A7C59;
+            margin-bottom: 3rem;
+            font-weight: 300;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+            border: none;
+            padding: 1.5rem 3rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 215, 0, 0.4);
+            background: linear-gradient(135deg, #FFA500, #FF8C00);
+        }
+
+        .setup-container {
+            max-width: 700px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .setup-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            color: #2C5F41;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .setup-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 15px;
+            border-left: 4px solid #FFD700;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: #2C5F41;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4A7C59;
+            font-weight: 500;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #E8F5E8;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+        }
+
+        .input-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .add-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .add-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .item-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+
+        .item-tag {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+            padding: 0.5rem 1rem;
+            margin: 0.25rem;
+            border-radius: 25px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        }
+
+        .game-tag {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .remove-item {
+            background: none;
+            border: none;
+            color: white;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 0 0.25rem;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .remove-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .suggested-player {
+            background: rgba(76, 175, 80, 0.1);
+            color: #2C5F41;
+            border: 1px solid #4CAF50;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .suggested-player:hover {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .suggested-player.added {
+            background: #ccc;
+            color: #666;
+            cursor: not-allowed;
+            border-color: #ccc;
+        }
+
+        .team-name-input {
+            margin-bottom: 0.5rem;
+        }
+
+        .team-name-field {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #E8F5E8;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .team-colors {
+            --team-1: #FF4444;
+            --team-2: #00CC88;
+            --team-3: #FF8800;
+            --team-4: #8844FF;
+            --team-5: #0088FF;
+            --team-6: #DDA0DD;
+            --team-7: #FFB347;
+            --team-8: #98FB98;
+        }
+
+        .team-color-1 { border-left: 4px solid var(--team-1); }
+        .team-color-2 { border-left: 4px solid var(--team-2); }
+        .team-color-3 { border-left: 4px solid var(--team-3); }
+        .team-color-4 { border-left: 4px solid var(--team-4); }
+        .team-color-5 { border-left: 4px solid var(--team-5); }
+        .team-color-6 { border-left: 4px solid var(--team-6); }
+        .team-color-7 { border-left: 4px solid var(--team-7); }
+        .team-color-8 { border-left: 4px solid var(--team-8); }
+
+        .team-badge {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.3rem;
+        }
+
+        .team-badge-1 { background: var(--team-1); }
+        .team-badge-2 { background: var(--team-2); }
+        .team-badge-3 { background: var(--team-3); }
+        .team-badge-4 { background: var(--team-4); }
+        .team-badge-5 { background: var(--team-5); }
+        .team-badge-6 { background: var(--team-6); }
+        .team-badge-7 { background: var(--team-7); }
+        .team-badge-8 { background: var(--team-8); }
+
+        .team-assignment {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .team-column {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 10px;
+            padding: 1rem;
+            border: 2px solid #E8F5E8;
+        }
+
+        .team-header {
+            font-weight: 600;
+            color: #2C5F41;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .team-players {
+            min-height: 80px;
+        }
+
+        .team-player {
+            background: rgba(76, 175, 80, 0.1);
+            color: #2C5F41;
+            padding: 0.3rem 0.8rem;
+            margin: 0.2rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+
+        .continue-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .continue-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Optimized game screen for 2560x1440 */
+        .game-container {
+            max-width: 100%;
+            width: 100%;
+            height: calc(100vh - 2rem);
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            gap: 0.8rem;
+        }
+
+        .game-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 1rem;
+            height: 100%;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            height: 100%;
+            min-height: 0;
+        }
+
+        .game-header {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 0.8rem;
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+
+        .game-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.8rem;
+            color: #2C5F41;
+            margin-bottom: 0.3rem;
+            font-weight: 700;
+        }
+
+        .round-info {
+            color: #4A7C59;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .next-game-info {
+            color: #4A7C59;
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+        }
+
+        .event-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .event-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .event-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .event-message {
+            font-size: 1.8rem;
+            color: #1a4c96;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+        }
+
+        .event-action {
+            font-size: 1.3rem;
+            color: #d32f2f;
+            font-weight: 600;
+            margin-top: 0.8rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            border-left: 6px solid #d32f2f;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        }
+
+        .team-game-panel {
+            background: rgba(255, 107, 107, 0.95);
+            color: white;
+        }
+
+        .team-game-panel .event-message {
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .team-game-panel .event-action {
+            background: rgba(255, 255, 255, 0.95);
+            color: #1a4c96;
+            border-left: 6px solid #ffffff;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        }
+
+        .previous-event {
+            position: absolute;
+            bottom: 0.8rem;
+            left: 0.8rem;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 0.4rem 0.8rem;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            color: #666;
+            max-width: 200px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .scoreboard {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 0.8rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .scoreboard-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.3rem;
+            color: #2C5F41;
+            text-align: center;
+            margin-bottom: 0.3rem;
+            flex-shrink: 0;
+        }
+
+        .score-list {
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
+            padding-right: 0.3rem;
+        }
+
+        /* Compact score items for 25+ players */
+        .score-item {
+            display: grid;
+            grid-template-columns: 25px 20px 1fr 80px 35px 35px 30px; /* Changed from: 25px 20px 1fr 45px 45px 35px */
+            gap: 0.2rem;
+            align-items: center;
+            padding: 0.3rem;
+            margin-bottom: 0.15rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 0.75rem;
+        }
+
+
+        /* Even more compact for players below rank 10 */
+        .score-item.compact {
+            padding: 0.2rem;
+            margin-bottom: 0.1rem;
+            font-size: 0.7rem;
+            grid-template-columns: 20px 15px 1fr 70px 30px 30px 25px; /* Changed accordingly */
+        }
+
+        .score-item.compact .player-name {
+            font-size: 0.8rem;
+        }
+
+
+        .score-item.compact .score-badge {
+            font-size: 0.6rem;
+            padding: 0.1rem 0.3rem;
+            min-width: 20px;
+        }
+
+        .score-item.compact .total-score {
+            font-size: 0.75rem;
+            min-width: 25px;
+            padding: 0.15rem 0.3rem;
+        }
+
+        .score-item.team-1 { background: linear-gradient(135deg, rgba(255, 68, 68, 0.15), rgba(255, 68, 68, 0.08)); }
+        .score-item.team-2 { background: linear-gradient(135deg, rgba(0, 204, 136, 0.15), rgba(0, 204, 136, 0.08)); }
+        .score-item.team-3 { background: linear-gradient(135deg, rgba(255, 136, 0, 0.15), rgba(255, 136, 0, 0.08)); }
+        .score-item.team-4 { background: linear-gradient(135deg, rgba(136, 68, 255, 0.15), rgba(136, 68, 255, 0.08)); }
+        .score-item.team-5 { background: linear-gradient(135deg, rgba(0, 136, 255, 0.15), rgba(0, 136, 255, 0.08)); }
+        .score-item.team-6 { background: linear-gradient(135deg, rgba(221, 160, 221, 0.15), rgba(221, 160, 221, 0.08)); }
+        .score-item.team-7 { background: linear-gradient(135deg, rgba(255, 179, 71, 0.15), rgba(255, 179, 71, 0.08)); }
+        .score-item.team-8 { background: linear-gradient(135deg, rgba(152, 251, 152, 0.15), rgba(152, 251, 152, 0.08)); }
+
+        .player-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            gap: 0.1rem;
+        }
+
+        .score-item:hover {
+            transform: translateX(3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .player-name {
+            font-weight: 600;
+            color: #2C5F41;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-name.disabled {
+            opacity: 0.5;
+            text-decoration: line-through;
+        }
+
+        .team-name-display {
+            font-size: 0.65rem;
+            opacity: 0.7;
+            font-weight: 400;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .score-badge {
+            padding: 0.1rem 0.35rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.65rem;
+            text-align: center;
+            min-width: 25px;
+        }
+
+        .snaps-score {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+        }
+
+        .games-score {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .total-score {
+            background: linear-gradient(135deg, #FF6B6B, #FF5252);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 700;
+            min-width: 30px;
+            padding: 0.15rem 0.4rem;
+        }
+
+        .countdown {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 0.6rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+
+        .countdown-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #d32f2f;
+            transition: all 0.3s ease;
+        }
+
+        .paused {
+            color: #FFA500 !important;
+        }
+
+        .floating-btns {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        .floating-btn {
+            background: linear-gradient(135deg, #FF6B6B, #FF5252);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .floating-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
+        }
+
+        .floating-btn.secondary {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        }
+
+        .floating-btn.secondary:hover {
+            box-shadow: 0 12px 35px rgba(76, 175, 80, 0.4);
+        }
+
+        .floating-btn.tertiary {
+            background: linear-gradient(135deg, #FFA500, #FF8C00);
+            box-shadow: 0 8px 25px rgba(255, 165, 0, 0.3);
+        }
+
+        .floating-btn.tertiary:hover {
+            box-shadow: 0 12px 35px rgba(255, 165, 0, 0.4);
+        }
+
+        .floating-btn.quaternary {
+            background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+            box-shadow: 0 8px 25px rgba(156, 39, 176, 0.3);
+        }
+
+        .floating-btn.quaternary:hover {
+            box-shadow: 0 12px 35px rgba(156, 39, 176, 0.4);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2rem;
+            color: #2C5F41;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .team-score-input {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .team-name {
+            font-weight: 600;
+            color: #2C5F41;
+        }
+
+        .score-input {
+            width: 80px;
+            padding: 0.5rem;
+            border: 2px solid #E8F5E8;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .modal-btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: #f8f9fa;
+            color: #666;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .add-player-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #E8F5E8;
+        }
+
+        .add-player-input {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .add-player-field {
+            flex: 1;
+            padding: 0.5rem;
+            border: 2px solid #E8F5E8;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .add-player-btn {
+            padding: 0.5rem 1rem;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .content-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            margin-bottom: 0.3rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .content-item.enabled {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.08));
+            border-left: 3px solid #4CAF50;
+        }
+
+        .content-item.disabled {
+            background: linear-gradient(135deg, rgba(128, 128, 128, 0.15), rgba(128, 128, 128, 0.08));
+            border-left: 3px solid #888;
+            opacity: 0.6;
+        }
+
+        .content-item:hover {
+            transform: translateX(2px);
+        }
+
+        .content-status {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .status-enabled {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .status-disabled {
+            background: #888;
+            color: white;
+        }
+
+        @media (max-width: 1200px) {
+            .game-content {
+                grid-template-columns: 1fr 300px;
+            }
+            
+            .event-message {
+                font-size: 1.8rem;
+            }
+            
+            .event-action {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 1000px) {
+            .game-content {
+                grid-template-columns: 1fr 280px;
+            }
+            
+            .event-message {
+                font-size: 1.6rem;
+            }
+            
+            .event-action {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .game-container {
+                height: calc(100vh - 2rem);
+                gap: 0.5rem;
+                grid-template-rows: auto auto 1fr auto;
+            }
+            
+            .game-content {
+                grid-template-columns: 1fr;
+                grid-template-rows: none;
+                gap: 0.5rem;
+            }
+
+            .left-column {
+                order: 2;
+            }
+
+            .scoreboard {
+                order: 1;
+                max-height: 250px;
+            }
+            
+            .score-item {
+                grid-template-columns: auto auto 1fr;
+                grid-template-rows: auto auto;
+                gap: 0.2rem;
+            }
+
+            .score-badges {
+                display: flex;
+                gap: 0.2rem;
+                grid-column: 1 / -1;
+                justify-content: flex-end;
+            }
+            
+            .player-name {
+                grid-column: 3;
+                grid-row: 1;
+            }
+            
+            .event-message {
+                font-size: 1.4rem;
+            }
+            
+            .event-action {
+                font-size: 1rem;
+                padding: 1rem;
+            }
+            
+            .countdown {
+                padding: 0.5rem;
+            }
+            
+            .countdown-text {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="flower">🌸</div>
+    <div class="flower">🌼</div>
+    <div class="flower">🌻</div>
+    <div class="flower">🌺</div>
+    <div class="flower">🌷</div>
+
+    <!-- Welcome Screen -->
+    <div class="screen active" id="welcomeScreen">
+        <div class="welcome-container">
+            <h1 class="main-title">The Game of The Holy Nubbe</h1>
+            <p class="subtitle">A Magical Midsummer Adventure</p>
+            <button class="start-btn" onclick="showSetupScreen()">🌻 Start Game 🌻</button>
+        </div>
+    </div>
+
+    <!-- Setup Screen -->
+    <div class="screen" id="setupScreen">
+        <div class="setup-container">
+            <h2 class="setup-title">Game Setup</h2>
+            
+            <div class="setup-section">
+                <div class="section-title">👥 Players</div>
+                <div class="input-group">
+                    <div class="input-container">
+                        <input type="text" id="playerInput" class="input-field" placeholder="Enter player name" onkeypress="handlePlayerKeyPress(event)">
+                        <button class="add-btn" onclick="addPlayer()">Add Player</button>
+                    </div>
+                    <div style="margin: 1rem 0;">
+                        <div style="font-size: 0.9rem; color: #4A7C59; margin-bottom: 0.5rem;">Quick Add:</div>
+                        <div id="suggestedPlayers" style="display: flex; flex-wrap: wrap; gap: 0.3rem;"></div>
+                    </div>
+                    <div class="item-list" id="playerList"></div>
+                </div>
+            </div>
+
+            <div class="setup-section">
+                <div class="section-title">🏆 Teams</div>
+                <div class="input-group">
+                    <label class="input-label">Number of Teams</label>
+                    <input type="number" id="teamsInput" class="input-field" value="4" min="2" max="8" onchange="updateTeamAssignment()">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Custom Team Names (optional)</label>
+                    <div id="teamNameInputs"></div>
+                </div>
+                <div id="teamAssignment" class="team-assignment"></div>
+            </div>
+
+            <div class="setup-section">
+                <div class="section-title">🎯 Midsummer Games</div>
+                <div class="input-group">
+                    <div class="input-container">
+                        <input type="text" id="gameInput" class="input-field" placeholder="Enter game name (e.g., Beer Pong, Kubb)" onkeypress="handleGameKeyPress(event)">
+                        <button class="add-btn" onclick="addGame()">Add Game</button>
+                    </div>
+                    <div class="item-list" id="gameList"></div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Minutes Between Games</label>
+                    <input type="number" id="gameIntervalInput" class="input-field" value="15" min="5" max="60">
+                </div>
+            </div>
+
+            <div class="setup-section">
+                <div class="section-title">⚙️ Settings</div>
+                <div class="input-group">
+                    <label class="input-label">Total Game Duration (minutes)</label>
+                    <input type="number" id="durationInput" class="input-field" value="60" min="30" max="180">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Seconds Between Snaps Events</label>
+                    <input type="number" id="intervalInput" class="input-field" value="30" min="10" max="120">
+                </div>
+            </div>
+
+            <button class="continue-btn" id="startGameBtn" onclick="startGame()" disabled>Start The Festivities! 🎉</button>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div class="screen" id="gameScreen">
+        <div class="game-container">
+            <div class="game-content">
+                <div class="left-column">
+                    <div class="game-header">
+                        <h2 class="game-title">The Game of The Holy Nubbe</h2>
+                        <div class="round-info" id="roundInfo">Midsummer Magic in Progress!</div>
+                        <div class="next-game-info" id="nextGameInfo"></div>
+                    </div>
+
+                    <div class="event-panel" id="eventPanel">
+                        <div class="event-content">
+                            <div class="event-message" id="eventMessage">Get ready for midsummer magic!</div>
+                            <div class="event-action" id="eventAction"></div>
+                        </div>
+                        <div class="previous-event" id="previousEvent" style="display: none;">
+                            Previous: <span id="previousEventText"></span>
+                        </div>
+                    </div>
+
+                    <div class="countdown">
+                        <div class="countdown-text" id="countdownText">Ready to begin...</div>
+                    </div>
+                </div>
+
+                <div class="scoreboard">
+                    <h3 class="scoreboard-title">Scoreboard 🏆</h3>
+                    <div style="display: grid; grid-template-columns: 25px 20px 1fr 80px 35px 35px 30px; gap: 0.2rem; padding: 0.3rem; font-weight: 600; color: #2C5F41; font-size: 0.65rem; border-bottom: 2px solid #E8F5E8; margin-bottom: 0.3rem;">
+                        <div style="text-align: center;">#</div>
+                        <div></div>
+                        <div>Player</div>
+                        <div style="text-align: center;">Team</div>
+                        <div style="text-align: center;">SNAPS</div>
+                        <div style="text-align: center;">GAMES</div>
+                        <div style="text-align: center;">Total</div>
+                    </div>
+                    <div class="score-list" id="scoreList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <h3 class="modal-title">Game Settings</h3>
+            
+            <div class="input-group">
+                <label class="input-label">Seconds Between Snaps Events</label>
+                <input type="number" id="liveSnapsInterval" class="input-field" min="10" max="120">
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">Minutes Between Team Games</label>
+                <input type="number" id="liveGameInterval" class="input-field" min="5" max="60">
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">Audio Settings</label>
+                <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+                    <button class="add-btn" onclick="testSnapsSound()" style="background: #9C27B0;">🔊 Test SNAPS Sound</button>
+                    <input type="file" id="audioFileInput" accept="audio/*" onchange="loadCustomAudioFile(this)" style="font-size: 0.8rem;">
+                </div>
+                <div style="font-size: 0.8rem; color: #666; margin-bottom: 0.5rem;">
+                    Upload your "SNAPS TIME" audio file (mp3, wav, etc.) or use the default synthesized sound
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">Add Custom Challenge</label>
+                <div class="input-container">
+                    <input type="text" id="customChallengeInput" class="input-field" placeholder="Enter new challenge">
+                    <button class="add-btn" onclick="addCustomChallenge()">Add</button>
+                </div>
+                <div class="item-list" id="customChallengesList"></div>
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">Add Custom Language</label>
+                <div class="input-container">
+                    <input type="text" id="customLanguageInput" class="input-field" placeholder="Enter language name">
+                    <button class="add-btn" onclick="addCustomLanguage()">Add</button>
+                </div>
+                <div class="item-list" id="customLanguagesList"></div>
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">Add Custom Game</label>
+                <div class="input-container">
+                    <input type="text" id="customGameInput" class="input-field" placeholder="Enter game name">
+                    <button class="add-btn" onclick="addCustomGame()">Add</button>
+                </div>
+                <div class="item-list" id="customGamesList"></div>
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">Manage Challenges & Languages</label>
+                <button class="add-btn" onclick="openContentModal()" style="width: 100%;">🎯 Manage All Content</button>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" onclick="closeSettingsModal()">Cancel</button>
+                <button class="modal-btn primary" onclick="saveSettings()">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Management Modal -->
+    <div class="modal" id="contentModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <h3 class="modal-title">Manage Challenges & Languages</h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div>
+                    <h4 style="color: #2C5F41; margin-bottom: 1rem;">🎯 Challenges</h4>
+                    <div style="font-size: 0.8rem; color: #666; margin-bottom: 0.5rem;">Click to enable/disable:</div>
+                    <div id="challengeToggleList" style="max-height: 300px; overflow-y: auto;"></div>
+                </div>
+                
+                <div>
+                    <h4 style="color: #2C5F41; margin-bottom: 1rem;">🎵 Languages</h4>
+                    <div style="font-size: 0.8rem; color: #666; margin-bottom: 0.5rem;">Click to enable/disable:</div>
+                    <div id="languageToggleList" style="max-height: 300px; overflow-y: auto;"></div>
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="modal-btn primary" onclick="closeContentModal()">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Score Input Modal -->
+    <div class="modal" id="scoreModal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="modalTitle">Enter Game Scores</h3>
+            <div id="teamScoreInputs"></div>
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" onclick="closeScoreModal()">Cancel</button>
+                <button class="modal-btn primary" onclick="submitGameScores()">Submit Scores</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disable Player Modal -->
+    <div class="modal" id="disableModal">
+        <div class="modal-content">
+            <h3 class="modal-title">Manage Players</h3>
+            <div style="margin-bottom: 1rem; color: #666; font-size: 0.9rem;">
+                Disabled players stay in scoreboard but won't be selected for snaps
+            </div>
+            <div id="playerToggleList"></div>
+            
+            <div class="add-player-section">
+                <div style="font-weight: 600; color: #2C5F41; margin-bottom: 0.5rem;">Add New Player:</div>
+                <div class="add-player-input">
+                    <input type="text" class="add-player-field" id="newPlayerInput" placeholder="Enter player name" onkeypress="handleNewPlayerKeyPress(event)">
+                    <button class="add-player-btn" onclick="addNewPlayer()">Add</button>
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="modal-btn primary" onclick="closeDisableModal()">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Buttons -->
+    <div class="floating-btns">
+        <button class="floating-btn quaternary" onclick="openSettingsModal()" title="Game Settings">⚙️</button>
+        <button class="floating-btn tertiary" onclick="openDisableModal()" title="Manage Players">👥</button>
+        <button class="floating-btn secondary" id="gameBtn" onclick="openScoreModal()" title="Enter Game Scores" style="display: none;">🎯</button>
+        <button class="floating-btn" onclick="resetGame()" title="New Game">🔄</button>
+    </div>
+
+    <script>
+        var challenges = [
+            "Swap seats with someone!", 
+            "Turn on a tribute song for Avicii", 
+            "Do a Swedish dance move!",
+            "Sing a Swedish song!",  
+            "Dance around the midsummer pole!",
+            "Sing a midsummer song",
+            "Swap seats with someone!",
+            "ANOTHER ONE! YES, another snaps!",
+            "Give Juni a drink",
+            "Tell a joke in your best Swedish accent",
+            "Make a toast to the midsummer spirit",
+            "Swap Midsummer crowns with someone",
+            "Scroll through your phone and find an instagram story. Recreate it and post it.",
+            "Turn on an ABBA song",
+            "Play a song by a Swedish artist",
+            "Handstand contest",
+            "Stand up with a volleyball without catching it",
+            "Take as many snus as you can",
+            "Chug a beer in under 20 seconds",
+            "Dance-off!",
+            "Tell a dad joke",
+            "Name 10 other players",
+            "Shotgun a beer",
+            "Imitate Donald Trump",
+            "Do your best italian accent",
+            "Tell your best pickup line",
+            "Find some Spanish friends and show them your Spanish skills"
+        ];
+
+        var snapsvisor = [
+            "Sing 'Helan går' in SWEDISH",
+            "Sing 'Helan går' in ENGLISH",
+            "Sing 'Helan går' in NORWEGIAN",
+            "Sing 'Helan går' in DUTCH",
+            "Sing 'Helan går' in AUSTRALIAN", 
+            "Sing 'Helan går' in SLOVAKIAN",
+            "Sing 'Helan går' in SPANISH",
+            "Sing 'Helan går' in GERMAN",
+        ];
+
+        var suggestedPlayers = [
+            "Domenic", "Jens", "Victor", "Markus", "Juni", "Karen", 
+            "Julie", "Annika", "Iris", "Roman", "Shoeb", "Sean", 
+            "Gustav", "Guido", "Karlijn", "Dana", "Emma", "Helene", "Louisa", "Mike", "Miki",
+            "Thomas", "Cas", "Max", "Bobby" 
+        ];
+
+        var teamColors = [
+            "#FF4444", "#00CC88", "#FF8800", "#8844FF", 
+            "#0088FF", "#DDA0DD", "#FFB347", "#98FB98"
+        ];
+
+        var players = [];
+        var teams = [];
+        var teamNames = {};
+        var teamAssignments = {};
+        var playerTeams = {};
+        var games = [];
+        var snapsScores = {};
+        var gameScores = {};
+        var currentGameIndex = 0;
+        var gameInterval = 15;
+        var totalDuration = 60;
+        var snapsInterval = 30;
+        var gameTimer = null;
+        var countdownTimer = null;
+        var gameTimeTimer = null;
+        var nextGameTimer = null;
+        var isPaused = false;
+        var startTime = null;
+        var pausedTime = 0;
+        var totalPausedTime = 0;
+        var disabledPlayers = new Set();
+        var previousEvent = "";
+        var customChallenges = [];
+        var customLanguages = [];
+        var customGames = [];
+        var disabledChallenges = new Set();
+        var disabledLanguages = new Set();
+        var audioContext = null;
+        var snapsTimeAudio = null;
+
+        function initializeAudio() {
+            // Initialize Web Audio API
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            // Try to load custom audio file if available
+            loadCustomSnapsAudio();
+        }
+
+        function loadCustomSnapsAudio() {
+            // Check if there's a custom audio file
+            // You can replace 'snaps-time.mp3' with your actual file name
+            var audio = new Audio();
+            audio.preload = 'auto';
+            audio.onerror = function() {
+                console.log('Custom SNAPS audio not found, using synthesized sound');
+            };
+            audio.oncanplaythrough = function() {
+              snapsTimeAudio = audio;
+            //    console.log('Custom SNAPS audio loaded successfully');
+            };
+            // Uncomment and modify this line when you have your audio file:
+            // audio.src = 'snaps-time.mp3'; // Replace with your audio file path
+        }
+
+        function createSynthesizedSnapsSound() {
+            if (!audioContext) return;
+            
+            try {
+                // Create a fun, attention-grabbing sound
+                var oscillator1 = audioContext.createOscillator();
+                var oscillator2 = audioContext.createOscillator();
+                var gainNode = audioContext.createGain();
+                
+                // Two-tone chime effect
+                oscillator1.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator1.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.3);
+                
+                oscillator2.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+                oscillator2.frequency.exponentialRampToValueAtTime(900, audioContext.currentTime + 0.4);
+                
+                // Connect oscillators
+                oscillator1.connect(gainNode);
+                oscillator2.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Volume envelope
+                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                // Play the sound
+                oscillator1.start(audioContext.currentTime);
+                oscillator2.start(audioContext.currentTime + 0.1);
+                oscillator1.stop(audioContext.currentTime + 0.5);
+                oscillator2.stop(audioContext.currentTime + 0.6);
+            } catch (e) {
+                console.log('Audio synthesis failed:', e);
+            }
+        }
+
+        function playSnapsTimeSound() {
+            // First try to resume audio context (required by modern browsers)
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            
+            if (snapsTimeAudio) {
+                // Play custom audio
+                try {
+                    snapsTimeAudio.currentTime = 0;
+                    snapsTimeAudio.volume = 0.7;
+                    snapsTimeAudio.play();
+                } catch (e) {
+                    console.log('Failed to play custom audio, falling back to synthesized sound');
+                    createSynthesizedSnapsSound();
+                }
+            } else {
+                // Play synthesized sound
+                createSynthesizedSnapsSound();
+            }
+        }
+
+        function testSnapsSound() {
+            playSnapsTimeSound();
+        }
+
+        function loadCustomAudioFile(input) {
+            if (input.files && input.files[0]) {
+                var file = input.files[0];
+                var url = URL.createObjectURL(file);
+                
+                var audio = new Audio(url);
+                audio.oncanplaythrough = function() {
+                    snapsTimeAudio = audio;
+                //    alert('Custom SNAPS audio loaded! Test it with the button above.');
+                };
+                audio.onerror = function() {
+                    alert('Failed to load audio file. Please try a different format.');
+                };
+                audio.load();
+            }
+        }
+
+        function showScreen(screenId) {
+            var screens = document.querySelectorAll('.screen');
+            for (var i = 0; i < screens.length; i++) {
+                screens[i].classList.remove('active');
+            }
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function showSetupScreen() {
+            showScreen('setupScreen');
+            initializeSuggestedPlayers();
+            initializeAudio();
+        }
+
+        function initializeSuggestedPlayers() {
+            var container = document.getElementById('suggestedPlayers');
+            container.innerHTML = '';
+            
+            for (var i = 0; i < suggestedPlayers.length; i++) {
+                var name = suggestedPlayers[i];
+                var button = document.createElement('button');
+                button.className = 'suggested-player';
+                button.textContent = name;
+                button.onclick = (function(playerName) {
+                    return function() { addSuggestedPlayer(playerName); };
+                })(name);
+                container.appendChild(button);
+            }
+        }
+
+        function addSuggestedPlayer(name) {
+            if (players.indexOf(name) === -1) {
+                players.push(name);
+                snapsScores[name] = 0;
+                gameScores[name] = 0;
+                updatePlayerList();
+                updateTeamAssignment();
+                updateStartButton();
+                updateSuggestedPlayers();
+            }
+        }
+
+        function updateSuggestedPlayers() {
+            var buttons = document.querySelectorAll('.suggested-player');
+            for (var i = 0; i < buttons.length; i++) {
+                var button = buttons[i];
+                var name = button.textContent;
+                if (players.indexOf(name) !== -1) {
+                    button.classList.add('added');
+                    button.onclick = null;
+                } else {
+                    button.classList.remove('added');
+                    button.onclick = (function(playerName) {
+                        return function() { addSuggestedPlayer(playerName); };
+                    })(name);
+                }
+            }
+        }
+
+        function handlePlayerKeyPress(event) {
+            if (event.key === 'Enter') {
+                addPlayer();
+            }
+        }
+
+        function handleGameKeyPress(event) {
+            if (event.key === 'Enter') {
+                addGame();
+            }
+        }
+
+        function handleNewPlayerKeyPress(event) {
+            if (event.key === 'Enter') {
+                addNewPlayer();
+            }
+        }
+
+        function addPlayer() {
+            var input = document.getElementById('playerInput');
+            var playerName = input.value.trim();
+            
+            if (playerName && players.indexOf(playerName) === -1) {
+                players.push(playerName);
+                snapsScores[playerName] = 0;
+                gameScores[playerName] = 0;
+                updatePlayerList();
+                updateTeamAssignment();
+                updateSuggestedPlayers();
+                input.value = '';
+                updateStartButton();
+            }
+        }
+
+        function removePlayer(playerName) {
+            players = players.filter(function(p) { return p !== playerName; });
+            delete snapsScores[playerName];
+            delete gameScores[playerName];
+            updatePlayerList();
+            updateTeamAssignment();
+            updateSuggestedPlayers();
+            updateStartButton();
+        }
+
+        function updatePlayerList() {
+            var playerList = document.getElementById('playerList');
+            playerList.innerHTML = '';
+            
+            for (var i = 0; i < players.length; i++) {
+                var player = players[i];
+                var playerTag = document.createElement('div');
+                playerTag.className = 'item-tag';
+                playerTag.innerHTML = player + '<button class="remove-item" onclick="removePlayer(\'' + player + '\')">×</button>';
+                playerList.appendChild(playerTag);
+            }
+        }
+
+        function addGame() {
+            var input = document.getElementById('gameInput');
+            var gameName = input.value.trim();
+            
+            if (gameName && games.indexOf(gameName) === -1) {
+                games.push(gameName);
+                updateGameList();
+                input.value = '';
+                updateStartButton();
+            }
+        }
+
+        function removeGame(gameName) {
+            games = games.filter(function(g) { return g !== gameName; });
+            updateGameList();
+            updateStartButton();
+        }
+
+        function updateGameList() {
+            var gameList = document.getElementById('gameList');
+            gameList.innerHTML = '';
+            
+            for (var i = 0; i < games.length; i++) {
+                var game = games[i];
+                var gameTag = document.createElement('div');
+                gameTag.className = 'item-tag game-tag';
+                gameTag.innerHTML = game + '<button class="remove-item" onclick="removeGame(\'' + game + '\')">×</button>';
+                gameList.appendChild(gameTag);
+            }
+        }
+
+        function calculateTargetSnapsEvents() {
+            var totalSeconds = totalDuration * 60;
+            var teamGameSeconds = games.length * 90; // 1.5 minutes per team game
+            var bufferSeconds = 60; // Buffer for delays and pauses
+            var availableSeconds = totalSeconds - teamGameSeconds - bufferSeconds;
+            var cycleTime = snapsInterval + 3; // Countdown + display time
+            return Math.floor(availableSeconds / cycleTime);
+        }
+
+        function updateTeamAssignment() {
+            var numTeams = parseInt(document.getElementById('teamsInput').value);
+            var teamContainer = document.getElementById('teamAssignment');
+            var teamNameContainer = document.getElementById('teamNameInputs');
+            
+            teamContainer.innerHTML = '';
+            teamNameContainer.innerHTML = '';
+            
+            teams = [];
+            for (var i = 1; i <= numTeams; i++) {
+                teams.push('Team ' + i);
+            }
+            
+            for (var i = 0; i < teams.length; i++) {
+                var team = teams[i];
+                var inputDiv = document.createElement('div');
+                inputDiv.className = 'team-name-input';
+                inputDiv.innerHTML = '<input type="text" class="team-name-field" placeholder="' + team + '" id="teamName-' + i + '" onchange="updateTeamName(' + i + ', this.value)">';
+                teamNameContainer.appendChild(inputDiv);
+            }
+            
+            teamAssignments = {};
+            playerTeams = {};
+            for (var i = 0; i < players.length; i++) {
+                var player = players[i];
+                var teamIndex = i % numTeams;
+                var teamName = teams[teamIndex];
+                if (!teamAssignments[teamName]) {
+                    teamAssignments[teamName] = [];
+                }
+                teamAssignments[teamName].push(player);
+                playerTeams[player] = teamIndex + 1;
+            }
+            
+            for (var i = 0; i < teams.length; i++) {
+                var team = teams[i];
+                var teamColumn = document.createElement('div');
+                teamColumn.className = 'team-column team-color-' + (i + 1);
+                var teamPlayersHtml = '';
+                if (teamAssignments[team]) {
+                    for (var j = 0; j < teamAssignments[team].length; j++) {
+                        teamPlayersHtml += '<div class="team-player">' + teamAssignments[team][j] + '</div>';
+                    }
+                }
+                teamColumn.innerHTML = '<div class="team-header"><span class="team-badge team-badge-' + (i + 1) + '"></span>' + (teamNames[team] || team) + '</div><div class="team-players">' + teamPlayersHtml + '</div>';
+                teamContainer.appendChild(teamColumn);
+            }
+        }
+
+        function updateTeamName(index, name) {
+            var oldTeamName = teams[index];
+            var newTeamName = name.trim() || 'Team ' + (index + 1);
+            teamNames[oldTeamName] = newTeamName;
+            updateTeamAssignment();
+        }
+
+        function updateStartButton() {
+            var startBtn = document.getElementById('startGameBtn');
+            startBtn.disabled = players.length < 2 || games.length < 1;
+        }
+
+        function startGame() {
+            gameInterval = parseInt(document.getElementById('gameIntervalInput').value);
+            totalDuration = parseInt(document.getElementById('durationInput').value);
+            snapsInterval = parseInt(document.getElementById('intervalInput').value);
+            
+            showScreen('gameScreen');
+            updateScoreboard();
+            updateGameInfo();
+            
+            startTime = Date.now();
+            totalPausedTime = 0;
+            document.getElementById('gameBtn').style.display = 'flex';
+            
+            setTimeout(function() { startGameLoop(); }, 1000);
+            startGameTimeUpdater();
+        }
+
+        function startGameTimeUpdater() {
+            nextGameTimer = setInterval(function() {
+                if (!isPaused) {
+                    updateGameInfo();
+                }
+            }, 1000);
+        }
+
+        function startGameLoop() {
+            if (!isPaused) {
+                var currentTime = getCurrentGameTime();
+                var nextGameTime = (currentGameIndex + 1) * gameInterval;
+                
+                if (currentTime >= nextGameTime && currentGameIndex < games.length) {
+                    triggerTeamGame();
+                    return;
+                }
+                
+                if (currentTime >= totalDuration) {
+                    endGame();
+                    return;
+                }
+                
+                playSnapsRound();
+            } else {
+                setTimeout(function() { startGameLoop(); }, 1000);
+            }
+        }
+
+        function getCurrentGameTime() {
+            if (!startTime) return 0;
+            var elapsed = Date.now() - startTime - totalPausedTime;
+            return Math.floor(elapsed / 1000 / 60);
+        }
+
+        function formatTime(minutes) {
+            var hours = Math.floor(minutes / 60);
+            var mins = minutes % 60;
+            if (hours > 0) {
+                return hours + 'h ' + mins + 'm';
+            }
+            return mins + 'm';
+        }
+
+        function playSnapsRound() {
+            var countdown = snapsInterval;
+            var countdownElement = document.getElementById('countdownText');
+            var soundPlayed = false;
+            
+            countdownTimer = setInterval(function() {
+                if (isPaused) {
+                    countdownElement.textContent = '⏸️ Paused - Team Game in Progress';
+                    countdownElement.classList.add('paused');
+                    clearInterval(countdownTimer);
+                    return;
+                }
+                
+                countdownElement.classList.remove('paused');
+                countdownElement.textContent = 'Next snaps in: ' + countdown + 's';
+                
+                // Play sound effect when 10 seconds remaining
+                if (countdown === 10 && !soundPlayed) {
+                    playSnapsTimeSound();
+                    soundPlayed = true;
+                    // Add visual emphasis too
+                    countdownElement.style.transform = 'scale(1.1)';
+                    countdownElement.style.color = '#FF6B6B';
+                    setTimeout(function() {
+                        countdownElement.style.transform = 'scale(1)';
+                        countdownElement.style.color = '#d32f2f';
+                    }, 500);
+                }
+                
+                countdown--;
+                
+                if (countdown < 0) {
+                    clearInterval(countdownTimer);
+                    executeSnapsEvent();
+                }
+            }, 1000);
+        }
+
+        function executeSnapsEvent() {
+            if (isPaused) {
+                setTimeout(function() { startGameLoop(); }, 1000);
+                return;
+            }
+            
+            var activePlayers = players.filter(function(player) {
+                return !disabledPlayers.has(player);
+            });
+            
+            if (activePlayers.length < 2) {
+                setTimeout(function() { startGameLoop(); }, 3000);
+                return;
+            }
+            
+            var chosenPlayer = activePlayers[Math.floor(Math.random() * activePlayers.length)];
+            var availableFriends = activePlayers.filter(function(p) { return p !== chosenPlayer; });
+            var chosenFriend = availableFriends[Math.floor(Math.random() * availableFriends.length)];
+            
+            snapsScores[chosenPlayer]++;
+            snapsScores[chosenFriend]++;
+            
+            var eventPanel = document.getElementById('eventPanel');
+            var eventMessage = document.getElementById('eventMessage');
+            var eventAction = document.getElementById('eventAction');
+            var previousEventEl = document.getElementById('previousEvent');
+            var previousEventText = document.getElementById('previousEventText');
+            
+            if (previousEvent) {
+                previousEventText.textContent = previousEvent;
+                previousEventEl.style.display = 'block';
+            }
+            
+            eventPanel.classList.remove('team-game-panel');
+            
+            var currentEventText = chosenPlayer + ' & ' + chosenFriend + ' - Take a snaps together!';
+            eventMessage.innerHTML = '🍻 <strong>' + chosenPlayer + '</strong> & <strong>' + chosenFriend + '</strong><br>Take a snaps together!';
+            
+            var actionText = '';
+            if (Math.random() < 0.5) {
+                var enabledChallenges = challenges.concat(customChallenges).filter(function(challenge) {
+                    return !disabledChallenges.has(challenge);
+                });
+                if (enabledChallenges.length > 0) {
+                    var challenge = enabledChallenges[Math.floor(Math.random() * enabledChallenges.length)];
+                    eventAction.innerHTML = '🎯 <strong>Challenge:</strong><br>' + challenge;
+                    actionText = 'Challenge: ' + challenge;
+                } else {
+                    // Fallback to snapsvisa if no challenges enabled
+                    var enabledLanguages = snapsvisor.concat(customLanguages.map(function(lang) {
+                        return 'Sing \'Helan går\' in ' + lang;
+                    })).filter(function(snapsvisa) {
+                        return !disabledLanguages.has(snapsvisa);
+                    });
+                    if (enabledLanguages.length > 0) {
+                        var snapsvisa = enabledLanguages[Math.floor(Math.random() * enabledLanguages.length)];
+                        eventAction.innerHTML = '🎵 <strong>Snapsvisa:</strong><br>' + snapsvisa;
+                        actionText = 'Snapsvisa: ' + snapsvisa;
+                    }
+                }
+            } else {
+                var enabledLanguages = snapsvisor.concat(customLanguages.map(function(lang) {
+                    return 'Sing \'Helan går\' in ' + lang;
+                })).filter(function(snapsvisa) {
+                    return !disabledLanguages.has(snapsvisa);
+                });
+                if (enabledLanguages.length > 0) {
+                    var snapsvisa = enabledLanguages[Math.floor(Math.random() * enabledLanguages.length)];
+                    eventAction.innerHTML = '🎵 <strong>Snapsvisa:</strong><br>' + snapsvisa;
+                    actionText = 'Snapsvisa: ' + snapsvisa;
+                } else {
+                    // Fallback to challenges if no languages enabled
+                    var enabledChallenges = challenges.concat(customChallenges).filter(function(challenge) {
+                        return !disabledChallenges.has(challenge);
+                    });
+                    if (enabledChallenges.length > 0) {
+                        var challenge = enabledChallenges[Math.floor(Math.random() * enabledChallenges.length)];
+                        eventAction.innerHTML = '🎯 <strong>Challenge:</strong><br>' + challenge;
+                        actionText = 'Challenge: ' + challenge;
+                    }
+                }
+            }
+            
+            previousEvent = currentEventText + ' - ' + actionText;
+            eventMessage.style.color = getRandomColor();
+            
+            updateScoreboard();
+            
+            setTimeout(function() { startGameLoop(); }, 3000);
+        }
+
+        function triggerTeamGame() {
+            isPaused = true;
+            pausedTime = Date.now();
+            currentGameIndex++;
+            
+            var eventPanel = document.getElementById('eventPanel');
+            var eventMessage = document.getElementById('eventMessage');
+            var eventAction = document.getElementById('eventAction');
+            var countdownElement = document.getElementById('countdownText');
+            
+            eventPanel.classList.add('team-game-panel');
+            
+            var currentGame = games[currentGameIndex - 1];
+            eventMessage.innerHTML = '🎯 <strong>TEAM GAME TIME!</strong><br>' + currentGame;
+            eventAction.innerHTML = '🏆 All teams compete!<br>Click the game button (🎯) when finished to enter scores.';
+            
+            countdownElement.textContent = '⏸️ Paused - Team Game: ' + currentGame;
+            countdownElement.classList.add('paused');
+            
+            updateGameInfo();
+        }
+
+        function getRandomColor() {
+            var colors = ['#1a4c96', '#d32f2f', '#2e7d32', '#7b1fa2', '#ef6c00', '#5d4037'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function updateScoreboard() {
+            var scoreList = document.getElementById('scoreList');
+            
+            var playersWithScores = players.map(function(player) {
+                return {
+                    name: player,
+                    snaps: snapsScores[player] || 0,
+                    games: gameScores[player] || 0,
+                    total: (snapsScores[player] || 0) + (gameScores[player] || 0),
+                    teamNumber: playerTeams[player] || 1,
+                    disabled: disabledPlayers.has(player)
+                };
+            }).sort(function(a, b) {
+                return b.total - a.total;
+            });
+            
+            scoreList.innerHTML = '';
+            for (var i = 0; i < playersWithScores.length; i++) {
+                var player = playersWithScores[i];
+                var scoreItem = document.createElement('div');
+                scoreItem.className = 'score-item team-' + player.teamNumber;
+                
+                // Add compact class for players ranked 11 and below
+                if (i >= 1) {
+                    scoreItem.classList.add('compact');
+                }
+                
+                var teamName = getTeamDisplayName(player.teamNumber);
+                var disabledClass = player.disabled ? ' disabled' : '';
+                
+                scoreItem.innerHTML = 
+    '<div style="display: flex; align-items: center; font-size: ' + (i >= 10 ? '0.65rem' : '0.75rem') + '; font-weight: bold; color: #333;">#' + (i + 1) + '</div>' +
+    '<span class="team-badge team-badge-' + player.teamNumber + '"></span>' +
+    '<div class="player-info"><span class="player-name' + disabledClass + '">' + player.name + '</span></div>' +
+    '<div style="font-size: ' + (i >= 10 ? '0.6rem' : '0.7rem') + '; color: #666; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;" title="' + teamName + '">' + teamName + '</div>' +
+    '<span class="score-badge snaps-score">' + player.snaps + '</span>' +
+    '<span class="score-badge games-score">' + player.games + '</span>' +
+    '<span class="score-badge total-score">' + player.total + '</span>';
+                scoreList.appendChild(scoreItem);
+            }
+        }
+
+        function getTeamDisplayName(teamNumber) {
+            var teamKey = teams[teamNumber - 1];
+            return teamNames[teamKey] || teamKey || ('Team ' + teamNumber);
+        }
+
+        function updateGameInfo() {
+            var roundInfo = document.getElementById('roundInfo');
+            var nextGameInfo = document.getElementById('nextGameInfo');
+            var completedGames = currentGameIndex;
+            var totalGames = games.length;
+            
+            if (!startTime) {
+                // Calculate more accurate estimated total snaps events
+                var totalGameTime = totalDuration * 60; // Total seconds
+                var teamGameTime = games.length * 60; // Assume 1 minute per team game on average
+                var availableSnapsTime = totalGameTime - teamGameTime - 30; // 30s buffer for delays
+                var estimatedSnapsEvents = Math.floor(availableSnapsTime / (snapsInterval + 3)); // +3 for event display time
+                var targetSnapsEvents = calculateTargetSnapsEvents();
+
+                roundInfo.textContent = 'Games: ' + completedGames + '/' + totalGames + ' | Snaps: 0/' + targetSnapsEvents + ' | Ready to start!';
+                nextGameInfo.textContent = '';
+                return;
+            }
+            
+            var timeElapsed = getCurrentGameTime();
+            
+            // Calculate actual snaps events
+            var totalSnapsGiven = 0;
+            for (var player in snapsScores) {
+                totalSnapsGiven += snapsScores[player] || 0;
+            }
+            var actualSnapsEvents = Math.floor(totalSnapsGiven / 2);
+            
+            // Recalculate estimated total based on remaining time
+            var remainingTime = (totalDuration - timeElapsed) * 60; // seconds
+            var remainingGames = games.length - currentGameIndex;
+            var estimatedRemainingGameTime = remainingGames * 60; // 1 minute per game
+            var availableSnapsTime = remainingTime - estimatedRemainingGameTime;
+            var estimatedRemainingSnaps = Math.max(0, Math.floor(availableSnapsTime / (snapsInterval + 3)));
+            var estimatedTotalEvents = actualSnapsEvents + estimatedRemainingSnaps;
+            
+            roundInfo.textContent = 'Games: ' + completedGames + '/' + totalGames + ' | Snaps: ' + actualSnapsEvents + '/' + estimatedTotalEvents + ' | Time: ' + formatTime(timeElapsed) + '/' + formatTime(totalDuration);
+                    
+            if (currentGameIndex < games.length && !isPaused) {
+                var nextGameTime = (currentGameIndex + 1) * gameInterval;
+                var timeUntilNextGame = nextGameTime - timeElapsed;
+                
+                if (timeUntilNextGame > 0) {
+                    nextGameInfo.textContent = '⏰ Next game: ' + games[currentGameIndex] + ' in ' + formatTime(timeUntilNextGame);
+                } else {
+                    nextGameInfo.textContent = '';
+                }
+            } else if (isPaused) {
+                nextGameInfo.textContent = '⏸️ Game paused for team activity';
+            } else if (currentGameIndex >= games.length) {
+                nextGameInfo.textContent = '🏁 All team games completed!';
+            } else {
+                nextGameInfo.textContent = '';
+            }
+        }
+
+        function openScoreModal() {
+            if (!isPaused || currentGameIndex === 0) return;
+            
+            var modal = document.getElementById('scoreModal');
+            var modalTitle = document.getElementById('modalTitle');
+            var teamInputs = document.getElementById('teamScoreInputs');
+            
+            var currentGame = games[currentGameIndex - 1];
+            modalTitle.textContent = 'Enter Scores for: ' + currentGame;
+            
+            teamInputs.innerHTML = '';
+            for (var i = 0; i < teams.length; i++) {
+                var team = teams[i];
+                var displayName = teamNames[team] || team;
+                var inputDiv = document.createElement('div');
+                inputDiv.className = 'team-score-input';
+                inputDiv.innerHTML = '<span class="team-name">' + displayName + '</span><input type="number" class="score-input" id="score-' + team + '" value="0" min="0">';
+                teamInputs.appendChild(inputDiv);
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeScoreModal() {
+            document.getElementById('scoreModal').classList.remove('active');
+        }
+
+        function submitGameScores() {
+            var teamScores = {};
+            for (var i = 0; i < teams.length; i++) {
+                var team = teams[i];
+                var scoreInput = document.getElementById('score-' + team);
+                teamScores[team] = parseInt(scoreInput.value) || 0;
+            }
+            
+            for (var i = 0; i < teams.length; i++) {
+                var team = teams[i];
+                var teamPlayers = teamAssignments[team] || [];
+                var scorePerPlayer = teamScores[team];
+                for (var j = 0; j < teamPlayers.length; j++) {
+                    var player = teamPlayers[j];
+                    gameScores[player] = (gameScores[player] || 0) + scorePerPlayer;
+                }
+            }
+            
+            updateScoreboard();
+            closeScoreModal();
+            
+            if (pausedTime) {
+                totalPausedTime += Date.now() - pausedTime;
+                pausedTime = 0;
+            }
+            isPaused = false;
+            
+            var eventPanel = document.getElementById('eventPanel');
+            var eventMessage = document.getElementById('eventMessage');
+            var eventAction = document.getElementById('eventAction');
+            
+            eventPanel.classList.remove('team-game-panel');
+            eventMessage.innerHTML = '🎉 <strong>Game Complete!</strong><br>Back to snaps!';
+            eventAction.innerHTML = '🍻 Ready for more midsummer magic!';
+            
+            setTimeout(function() { startGameLoop(); }, 2000);
+        }
+
+        function openSettingsModal() {
+            var modal = document.getElementById('settingsModal');
+            
+            document.getElementById('liveSnapsInterval').value = snapsInterval;
+            document.getElementById('liveGameInterval').value = gameInterval;
+            
+            document.getElementById('customChallengeInput').value = '';
+            document.getElementById('customLanguageInput').value = '';
+            document.getElementById('customGameInput').value = '';
+            
+            updateCustomLists();
+            
+            modal.classList.add('active');
+        }
+
+        function updateCustomLists() {
+            var challengesList = document.getElementById('customChallengesList');
+            challengesList.innerHTML = '';
+            for (var i = 0; i < customChallenges.length; i++) {
+                var challenge = customChallenges[i];
+                var tag = document.createElement('div');
+                tag.className = 'item-tag';
+                tag.innerHTML = challenge + '<button class="remove-item" onclick="removeCustomChallenge(\'' + challenge + '\')">×</button>';
+                challengesList.appendChild(tag);
+            }
+            
+            var languagesList = document.getElementById('customLanguagesList');
+            languagesList.innerHTML = '';
+            for (var i = 0; i < customLanguages.length; i++) {
+                var language = customLanguages[i];
+                var tag = document.createElement('div');
+                tag.className = 'item-tag';
+                tag.innerHTML = language + '<button class="remove-item" onclick="removeCustomLanguage(\'' + language + '\')">×</button>';
+                languagesList.appendChild(tag);
+            }
+            
+            var gamesList = document.getElementById('customGamesList');
+            gamesList.innerHTML = '';
+            for (var i = 0; i < customGames.length; i++) {
+                var game = customGames[i];
+                var tag = document.createElement('div');
+                tag.className = 'item-tag game-tag';
+                tag.innerHTML = game + '<button class="remove-item" onclick="removeCustomGame(\'' + game + '\')">×</button>';
+                gamesList.appendChild(tag);
+            }
+        }
+
+        function addCustomChallenge() {
+            var input = document.getElementById('customChallengeInput');
+            var challenge = input.value.trim();
+            
+            if (challenge && customChallenges.indexOf(challenge) === -1) {
+                customChallenges.push(challenge);
+                input.value = '';
+                updateCustomLists();
+            }
+        }
+
+        function removeCustomChallenge(challenge) {
+            customChallenges = customChallenges.filter(function(c) { return c !== challenge; });
+            updateCustomLists();
+        }
+
+        function addCustomLanguage() {
+            var input = document.getElementById('customLanguageInput');
+            var language = input.value.trim();
+            
+            if (language && customLanguages.indexOf(language) === -1) {
+                customLanguages.push(language);
+                input.value = '';
+                updateCustomLists();
+            }
+        }
+
+        function removeCustomLanguage(language) {
+            customLanguages = customLanguages.filter(function(l) { return l !== language; });
+            updateCustomLists();
+        }
+
+        function addCustomGame() {
+            var input = document.getElementById('customGameInput');
+            var game = input.value.trim();
+            
+            if (game && customGames.indexOf(game) === -1 && games.indexOf(game) === -1) {
+                customGames.push(game);
+                games.push(game);
+                input.value = '';
+                updateCustomLists();
+            }
+        }
+
+        function removeCustomGame(game) {
+            customGames = customGames.filter(function(g) { return g !== game; });
+            games = games.filter(function(g) { return g !== game; });
+            updateCustomLists();
+        }
+
+        function saveSettings() {
+            var newSnapsInterval = parseInt(document.getElementById('liveSnapsInterval').value);
+            var newGameInterval = parseInt(document.getElementById('liveGameInterval').value);
+            
+            if (newSnapsInterval >= 10 && newSnapsInterval <= 120) {
+                snapsInterval = newSnapsInterval;
+            }
+            if (newGameInterval >= 5 && newGameInterval <= 60) {
+                gameInterval = newGameInterval;
+            }
+            
+            closeSettingsModal();
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.remove('active');
+        }
+
+        function openDisableModal() {
+            var modal = document.getElementById('disableModal');
+            var playerList = document.getElementById('playerToggleList');
+            
+            playerList.innerHTML = '';
+            for (var i = 0; i < players.length; i++) {
+                var player = players[i];
+                var isDisabled = disabledPlayers.has(player);
+                var playerDiv = document.createElement('div');
+                playerDiv.className = 'team-score-input';
+                var disabledClass = isDisabled ? ' disabled' : '';
+                playerDiv.innerHTML = '<span class="team-name' + disabledClass + '">' + player + '</span><label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" ' + (isDisabled ? 'checked' : '') + ' onchange="togglePlayer(\'' + player + '\', this.checked)"><span style="font-size: 0.8rem; color: #666;">Disable</span></label>';
+                playerList.appendChild(playerDiv);
+            }
+            
+            document.getElementById('newPlayerInput').value = '';
+            
+            modal.classList.add('active');
+        }
+
+        function togglePlayer(playerName, disabled) {
+            if (disabled) {
+                disabledPlayers.add(playerName);
+            } else {
+                disabledPlayers.delete(playerName);
+            }
+            updateScoreboard();
+        }
+
+        function addNewPlayer() {
+            var input = document.getElementById('newPlayerInput');
+            var playerName = input.value.trim();
+            
+            if (playerName && players.indexOf(playerName) === -1) {
+                players.push(playerName);
+                snapsScores[playerName] = 0;
+                gameScores[playerName] = 0;
+                
+                var randomTeamIndex = Math.floor(Math.random() * teams.length);
+                var teamName = teams[randomTeamIndex];
+                
+                if (!teamAssignments[teamName]) {
+                    teamAssignments[teamName] = [];
+                }
+                teamAssignments[teamName].push(playerName);
+                playerTeams[playerName] = randomTeamIndex + 1;
+                
+                input.value = '';
+                updateScoreboard();
+                
+                openDisableModal();
+            }
+        }
+
+        function openContentModal() {
+            var modal = document.getElementById('contentModal');
+            updateContentLists();
+            modal.classList.add('active');
+        }
+
+        function updateContentLists() {
+            // Update challenges list
+            var challengesList = document.getElementById('challengeToggleList');
+            challengesList.innerHTML = '';
+            
+            var allChallenges = challenges.concat(customChallenges);
+            for (var i = 0; i < allChallenges.length; i++) {
+                var challenge = allChallenges[i];
+                var isEnabled = !disabledChallenges.has(challenge);
+                var item = document.createElement('div');
+                item.className = 'content-item ' + (isEnabled ? 'enabled' : 'disabled');
+                item.onclick = (function(challengeName) {
+                    return function() { toggleChallenge(challengeName); };
+                })(challenge);
+                item.innerHTML = '<span style="flex: 1; text-align: left;">' + challenge + '</span><span class="content-status ' + (isEnabled ? 'status-enabled' : 'status-disabled') + '">' + (isEnabled ? 'ON' : 'OFF') + '</span>';
+                challengesList.appendChild(item);
+            }
+            
+            // Update languages list
+            var languagesList = document.getElementById('languageToggleList');
+            languagesList.innerHTML = '';
+            
+            var allLanguages = snapsvisor.concat(customLanguages.map(function(lang) {
+                return 'Sing \'Helan går\' in ' + lang;
+            }));
+            for (var i = 0; i < allLanguages.length; i++) {
+                var language = allLanguages[i];
+                var isEnabled = !disabledLanguages.has(language);
+                var item = document.createElement('div');
+                item.className = 'content-item ' + (isEnabled ? 'enabled' : 'disabled');
+                item.onclick = (function(languageName) {
+                    return function() { toggleLanguage(languageName); };
+                })(language);
+                item.innerHTML = '<span style="flex: 1; text-align: left;">' + language + '</span><span class="content-status ' + (isEnabled ? 'status-enabled' : 'status-disabled') + '">' + (isEnabled ? 'ON' : 'OFF') + '</span>';
+                languagesList.appendChild(item);
+            }
+        }
+
+        function toggleChallenge(challenge) {
+            if (disabledChallenges.has(challenge)) {
+                disabledChallenges.delete(challenge);
+            } else {
+                disabledChallenges.add(challenge);
+            }
+            updateContentLists();
+        }
+
+        function toggleLanguage(language) {
+            if (disabledLanguages.has(language)) {
+                disabledLanguages.delete(language);
+            } else {
+                disabledLanguages.add(language);
+            }
+            updateContentLists();
+        }
+
+        function closeDisableModal() {
+            document.getElementById('disableModal').classList.remove('active');
+        }
+
+        function closeContentModal() {
+            document.getElementById('contentModal').classList.remove('active');
+        }
+
+        function endGame() {
+            var eventMessage = document.getElementById('eventMessage');
+            var eventAction = document.getElementById('eventAction');
+            var countdownElement = document.getElementById('countdownText');
+            
+            if (countdownTimer) clearInterval(countdownTimer);
+            if (gameTimer) clearTimeout(gameTimer);
+            if (nextGameTimer) clearInterval(nextGameTimer);
+            
+            eventMessage.innerHTML = '🎉 <strong>Midsummer Complete!</strong><br>WE HAVE OUR MIDSUMMER CHAMPION!';
+            eventAction.innerHTML = '🏆 Drum rolls please!!';
+            countdownElement.textContent = 'Midsummer festivities complete! 🌻';
+            
+            // Find individual winner
+            var playersWithScores = players.map(function(player) {
+                return {
+                    name: player,
+                    total: (snapsScores[player] || 0) + (gameScores[player] || 0),
+                    snaps: snapsScores[player] || 0,
+                    teamNumber: playerTeams[player] || 1
+                };
+            }).sort(function(a, b) {
+                return b.total - a.total;
+            });
+            
+            // Find drunkest player (most snaps)
+            var drunkestPlayer = players.reduce(function(prev, current) {
+                return (snapsScores[current] || 0) > (snapsScores[prev] || 0) ? current : prev;
+            });
+            var drunkestSnaps = snapsScores[drunkestPlayer] || 0;
+            
+            // Calculate team totals based on GAME SCORES only
+            var teamTotals = {};
+            for (var i = 0; i < teams.length; i++) {
+                var team = teams[i];
+                teamTotals[team] = 0;
+                var teamPlayers = teamAssignments[team] || [];
+                for (var j = 0; j < teamPlayers.length; j++) {
+                    var player = teamPlayers[j];
+                    teamTotals[team] += gameScores[player] || 0; // Only game scores, not snaps
+                }
+            }
+            
+            // Find winning team
+            var winningTeam = null;
+            var highestTeamScore = -1;
+            for (var team in teamTotals) {
+                if (teamTotals[team] > highestTeamScore) {
+                    highestTeamScore = teamTotals[team];
+                    winningTeam = team;
+                }
+            }
+            
+            setTimeout(function() {
+                var resultText = '';
+                
+                if (playersWithScores.length > 0) {
+                    var winner = playersWithScores[0];
+                    resultText += '<br><br><div style="font-size: 1.8rem; margin: 1rem 0;">🥇 <strong>Winner: ' + winner.name + '</strong> with ' + winner.total + ' points!</div>';
+                }
+                
+                if (winningTeam) {
+                    var winningTeamDisplay = teamNames[winningTeam] || winningTeam;
+                    resultText += '<br>🏆 <strong>Winning Team: ' + winningTeamDisplay + '</strong> with ' + highestTeamScore + ' points!';
+                }
+                
+                if (drunkestPlayer && drunkestSnaps > 0) {
+                    resultText += '<br>🍻 <strong>' + drunkestPlayer + ' is probably the drunkest</strong> after ' + drunkestSnaps + ' snaps!';
+                }
+                
+                eventAction.innerHTML += resultText;
+            }, 2000);
+        }
+
+        function resetGame() {
+            if (confirm('Start a new game? All progress will be lost.')) {
+                players = [];
+                teams = [];
+                teamNames = {};
+                teamAssignments = {};
+                playerTeams = {};
+                games = [];
+                snapsScores = {};
+                gameScores = {};
+                currentGameIndex = 0;
+                isPaused = false;
+                startTime = null;
+                pausedTime = 0;
+                totalPausedTime = 0;
+                disabledPlayers.clear();
+                previousEvent = "";
+                customChallenges = [];
+                customLanguages = [];
+                customGames = [];
+                disabledChallenges.clear();
+                disabledLanguages.clear();
+                
+                if (gameTimer) clearTimeout(gameTimer);
+                if (countdownTimer) clearInterval(countdownTimer);
+                if (gameTimeTimer) clearTimeout(gameTimeTimer);
+                if (nextGameTimer) clearInterval(nextGameTimer);
+                
+                document.getElementById('playerInput').value = '';
+                document.getElementById('gameInput').value = '';
+                document.getElementById('playerList').innerHTML = '';
+                document.getElementById('gameList').innerHTML = '';
+                document.getElementById('teamAssignment').innerHTML = '';
+                document.getElementById('teamNameInputs').innerHTML = '';
+                document.getElementById('gameBtn').style.display = 'none';
+                closeScoreModal();
+                closeDisableModal();
+                closeSettingsModal();
+                closeContentModal();
+                updateStartButton();
+                initializeSuggestedPlayers();
+                
+                showScreen('welcomeScreen');
+            }
+        }
+    </script>
+</body>
+</html>
